@@ -1,0 +1,31 @@
+name: XPE Oracle Hunter
+on:
+  schedule:
+    - cron: "*/10 * * * *"   # cada 10 minutos, 24/7
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hunter
+  cancel-in-progress: false
+
+jobs:
+  hunt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cazar VM A1
+        env:
+          OCI_TENANCY: ${{ secrets.OCI_TENANCY }}
+          OCI_USER: ${{ secrets.OCI_USER }}
+          OCI_FINGERPRINT: ${{ secrets.OCI_FINGERPRINT }}
+          OCI_REGION: ${{ secrets.OCI_REGION }}
+          OCI_KEY: ${{ secrets.OCI_KEY }}
+          SSH_PUBKEY: ${{ secrets.SSH_PUBKEY }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          ALERT_EMAIL: ${{ secrets.ALERT_EMAIL }}
+          SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+        run: python3 oracle-hunter/hunter.py
